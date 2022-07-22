@@ -35,14 +35,10 @@ async def search(_, message: Message):
     query = message.text.split(' ',maxsplit=1)[1]
     m = await message.reply_text("**Searching....**")
     data = drive.drive_list(query)
-    # Anon Admin or That User!
-    user_id = 1087968824
-    if message.from_user:
-        user_id = message.from_user.id
-
+    user_id = message.from_user.id if message.from_user else 1087968824
     results = len(data)
     i = 0
-    i = i + RESULTS_COUNT
+    i += RESULTS_COUNT
 
     if results == 0:
         await m.edit(text="Found Literally Nothing.")

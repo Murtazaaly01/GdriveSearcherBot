@@ -55,22 +55,25 @@ class GoogleDriveHelper:
         fileName = fileName.replace("'","\\'").replace('"','\\"')
         gquery = " and ".join([f"name contains '{x}'" for x in fileName.split()])
         query = f"'{parent_id}' in parents and ({gquery})"
-        response = self.__service.files().list(supportsTeamDrives=True,
-                                               includeTeamDriveItems=True,
-                                               q=query,
-                                               spaces='drive',
-                                               pageSize=200,
-                                               fields='files(id, name, mimeType, size)',
-                                               orderBy='modifiedTime desc').execute()["files"]
-        return response
+        return (
+            self.__service.files()
+            .list(
+                supportsTeamDrives=True,
+                includeTeamDriveItems=True,
+                q=query,
+                spaces='drive',
+                pageSize=200,
+                fields='files(id, name, mimeType, size)',
+                orderBy='modifiedTime desc',
+            )
+            .execute()["files"]
+        )
 
     def drive_list(self, fileName):
         msg = ''
         data = []
-        INDEX = -1
-        for parent_id in DRIVE_ID:
+        for INDEX, parent_id in enumerate(DRIVE_ID):
             response = self.drive_query(parent_id, fileName)
-            INDEX += 1
             for file in response:
                 if file['mimeType'] == "application/vnd.google-apps.folder":
                     url_path = quote(f"{file['name']}")
